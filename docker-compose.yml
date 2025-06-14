@@ -34,7 +34,7 @@ services:
     networks:
       - laravel
   mysql:
-    image: mysql:latest
+    image: mysql:9.3.0
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
