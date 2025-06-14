@@ -11,6 +11,8 @@ class ProcessFile implements ShouldQueue
 {
     use Queueable;
 
+    private const MAX_CHUNCK_BATCH = 100;
+
     /**
      * Create a new job instance.
      */
@@ -24,24 +26,18 @@ class ProcessFile implements ShouldQueue
     public function handle(): void
     {
         $path = Storage::path($this->filename);
-        $lineNumber = 0;
         $currentChunk = [];
-        $totalRows = 0;
 
         try {
             File::lines($path)
-                ->each(function ($line) use (&$lineNumber, &$currentChunk, &$totalRows) 
-                    {    
-                        $totalRows++;
-                        $da['institution'] = (int) substr($line, 0, 5);
-                        $da['cuit'] = substr($line, 13, 11);
-                        $da['max_situation'] = (int) substr($line, 27, 2);
-                        $da['amount'] = (float) substr($line, 29, 12);
-                        $currentChunk[] =  $da;
-                    
-                        $lineNumber++;
+                ->each(function ($line) use (&$currentChunk) 
+                    {
+                        $currentChunk[]['institution'] = (int) substr($line, 0, 5);
+                        $currentChunk[]['cuit'] = substr($line, 13, 11);
+                        $currentChunk[]['max_situation'] = (int) substr($line, 27, 2);
+                        $currentChunk[]['amount'] = (float) substr($line, 29, 12);
 
-                        if (count($currentChunk) >= 100) {
+                        if (count($currentChunk) >= $this::MAX_CHUNCK_BATCH) {
                             UpdateDebtor::dispatch($currentChunk);
                             $currentChunk = [];
                         }

@@ -16,10 +16,7 @@ class UpdateDebtor implements ShouldQueue
      */
     public function __construct(
         private array $data
-    )
-    {
-        //
-    }
+    ) { }
 
     /**
      * Execute the job.
