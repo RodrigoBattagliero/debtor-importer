@@ -7,7 +7,6 @@ use App\Events\ImportJobCompleted;
 use App\Models\ImportJob;
 use App\Services\DebtorService;
 use App\Services\InstitutionService;
-use Exception;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -32,28 +31,27 @@ class UpdateDebtor implements ShouldQueue
 
     ): void
     {
-        $processedRows = 0;
-        $importJob = ImportJob::find($this->id);
-        if (!$importJob) {
-            return;
-        }
-        
         try {
+
+            $processedRows = 0;
+            $importJob = ImportJob::find($this->id);
+            if (!$importJob) {
+                throw new \Exception('Not importedJob found.');
+            }
             foreach ($this->data as $line) {
                 $debtorService->updateDebtor($line['cuit'], $line['max_situation'], $line['amount']);
                 $institutionService->updateInstitution($line['institution'], $line['amount']);
                 $processedRows++;
             }
-        } catch (Exception $e) {    
+            $importJob->update(['processed_rows' => $importJob->processed_rows + $processedRows]);
+
+            if ($importJob->total_rows == $importJob->processed_rows) {
+                $importJob->update(['status' => ImportJobStatus::DONE]);
+                ImportJobCompleted::dispatch($importJob);
+            }
+
+        } catch (\Exception $e) {
             echo $e->getMessage();
-        }
-
-        $processedTotalRows = $importJob->processed_rows + $processedRows;
-        $importJob->update(['processed_rows' => $processedTotalRows]);
-
-        if ($importJob->total_rows == $importJob->processed_rows) {
-            $importJob->update(['status' => ImportJobStatus::DONE]);
-            ImportJobCompleted::dispatch($importJob);
         }
     }
 }

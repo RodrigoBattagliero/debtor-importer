@@ -27,27 +27,22 @@ class ProcessFile implements ShouldQueue
      */
     public function handle(): void
     {
-        $importJob = ImportJob::find($this->id);
-        if (!$importJob) {
-            return;
-        }
-        $importJob->update(['status' => ImportJobStatus::IN_PROGRESS]);
-
-
-        $path = Storage::path($importJob->file);
-        $currentChunk = [];
-        $totalRows = 0;
-
         try {
-            File::lines($path)
-                ->each(function ($line) use (&$currentChunk, &$totalRows, $importJob) 
-                    {
-                        $data = [];
+            $importJob = ImportJob::find($this->id);
+            if (!$importJob) {
+                throw new \Exception('Not importedJob found.');
+            }
+            $importJob->update(['status' => ImportJobStatus::IN_PROGRESS]);
+    
+    
+            $path = Storage::path($importJob->file);
+            $currentChunk = [];
+            $totalRows = 0;
 
-                        $data['institution'] = (int) substr($line, 0, 5);
-                        $data['cuit'] = substr($line, 13, 11);
-                        $data['max_situation'] = (int) substr($line, 27, 2);
-                        $data['amount'] = (float) substr($line, 29, 12);
+            File::lines($path)
+                ->each(function ($row) use (&$currentChunk, &$totalRows, $importJob) 
+                    {
+                        $data = $this->getDataFromRow($row);
 
                         $currentChunk[] = $data;
 
@@ -59,14 +54,26 @@ class ProcessFile implements ShouldQueue
                     }
                 );
 
+            if (!empty($currentChunk)) {
+                UpdateDebtor::dispatch($importJob->id, $currentChunk);
+            }
+    
+            $importJob->update(['total_rows' => $totalRows]);
+
         } catch (\Exception $e) {
-            die($e->getMessage());
+            echo $e->getMessage();
         }
+        
+    }
 
-        if (!empty($currentChunk)) {
-            UpdateDebtor::dispatch($importJob->id, $currentChunk);
-        }
+    public function getDataFromRow(string $row): array
+    {
+        $data = [];
+        $data['institution'] = (int) substr($row, 0, 5);
+        $data['cuit'] = substr($row, 13, 11);
+        $data['max_situation'] = (int) substr($row, 27, 2);
+        $data['amount'] = (float) substr($row, 29, 12);
 
-        $importJob->update(['total_rows' => $totalRows]);
+        return $data;
     }
 }
