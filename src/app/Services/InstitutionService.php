@@ -19,4 +19,9 @@ class InstitutionService
         $institution->save();
 
     }
+
+    public function get(string $code): ?Institution
+    {
+        return Institution::where('code', $code)->first();
+    }
 }

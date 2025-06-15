@@ -1,12 +1,12 @@
 <?php
 
 use App\Http\Controllers\DebtorsController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\InstitutionsController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/test', [DebtorsController::class, 'index']);
+Route::get('/deudores/procesar-archivo', [DebtorsController::class, 'fileProcess']);
+Route::get('/deudores/top/{n?}', [DebtorsController::class, 'top']);
+Route::get('/deudores/{cuit}', [DebtorsController::class, 'get']);
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::get('/entidades/{code}', [InstitutionsController::class, 'get']);
 
