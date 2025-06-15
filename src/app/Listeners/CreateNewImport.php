@@ -4,8 +4,6 @@ namespace App\Listeners;
 
 use App\Events\FileUploaded;
 use App\Services\DebtorDispatcherService;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class CreateNewImport
 {
@@ -24,6 +22,6 @@ class CreateNewImport
      */
     public function handle(FileUploaded $event): void
     {
-        $this->debtorDispatcherService->createAndDispatch($event->file);
+        $this->debtorDispatcherService->createAndDispatch($event->file, $event->email);
     }
 }

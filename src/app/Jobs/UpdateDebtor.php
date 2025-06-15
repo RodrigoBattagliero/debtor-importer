@@ -53,7 +53,7 @@ class UpdateDebtor implements ShouldQueue
 
         if ($importJob->total_rows == $importJob->processed_rows) {
             $importJob->update(['status' => ImportJobStatus::DONE]);
-            ImportJobCompleted::dispatch();
+            ImportJobCompleted::dispatch($importJob);
         }
     }
 }

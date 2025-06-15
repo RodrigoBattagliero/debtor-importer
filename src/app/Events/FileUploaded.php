@@ -18,7 +18,8 @@ class FileUploaded
      * Create a new event instance.
      */
     public function __construct(
-        public $file
+        public string $file,
+        public string $email
     )
     {
         //

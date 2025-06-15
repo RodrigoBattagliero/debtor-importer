@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('file');
             $table->string('status');
+            $table->string('email_to_notify');
             $table->unsignedInteger('total_rows')->default(0);
             $table->unsignedInteger('processed_rows')->default(0);
             $table->timestamps();

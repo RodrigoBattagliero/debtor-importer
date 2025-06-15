@@ -23,7 +23,7 @@ class SendMailNotification
      */
     public function handle(ImportJobCompleted $event): void
     {
-        Mail::to('rbattagliero@gmail.com')
+        Mail::to($event->importJob->email_to_notify)
             ->queue(new ImportCompleted());
     }
 }

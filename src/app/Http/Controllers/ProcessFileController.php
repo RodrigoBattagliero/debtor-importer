@@ -14,8 +14,11 @@ class ProcessFileController extends Controller
 
     public function processFile(Request $request)
     {
-        $request->validate(['filename' => 'required|string']);
-        $this->debtorDispatcherService->createAndDispatch($request->filename);
+        $request->validate([
+            'filename' => 'required|string',
+            'email' => 'required|string|email',
+        ]);
+        $this->debtorDispatcherService->createAndDispatch($request->filename, $request->email);
         return response()->json('Ok');
     }
 }
