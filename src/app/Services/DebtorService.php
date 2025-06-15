@@ -11,10 +11,7 @@ class DebtorService
         $debtor = Debtor::where('cuit', $cuit)->first();
 
         if (!$debtor) {
-            $debtor = new Debtor();
-            $debtor->cuit = $cuit;
-            $debtor->amount = 0;
-            $debtor->max_situation = 0;
+            $debtor = $this->createDebtor($cuit);
         }
 
         if ($max_situation > $debtor->max_situation) {
@@ -24,6 +21,15 @@ class DebtorService
         $debtor->amount += $amount;
 
         $debtor->save();
+    }
+
+    public function createDebtor(string $cuit): Debtor
+    {
+        $debtor = new Debtor();
+        $debtor->cuit = $cuit;
+        $debtor->amount = 0;
+        $debtor->max_situation = 0;
+        return $debtor;
     }
 
     public function get(string $cuit): ?Debtor

@@ -2,26 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\DebtorDispatcherService;
 use App\Services\DebtorService;
 use Illuminate\Http\Request;
 
 class DebtorsController extends Controller
 {
     public function __construct(
-        private DebtorService $debtorService,
-        private DebtorDispatcherService $debtorDispatcherService
-    )
-    {
-        
-    }
-
-    public function processFile()
-    {
-        $filename = 'deudores.txt';
-        $this->debtorDispatcherService->createDispatcher($filename);
-        return response()->json('Ok');
-    }
+        private DebtorService $debtorService
+    ) { }
 
     public function get(request $request)
     {

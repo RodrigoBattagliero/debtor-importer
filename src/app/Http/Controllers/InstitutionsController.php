@@ -9,10 +9,8 @@ class InstitutionsController extends Controller
 {
     public function __construct(
         private InstitutionService $institutionService
-    )
-    {
-        
-    }
+    ) { }
+    
     public function get(Request $request)
     {
         $code = $request->code;

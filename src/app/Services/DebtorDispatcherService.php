@@ -8,7 +8,7 @@ use App\Models\ImportJob;
 
 class DebtorDispatcherService
 {
-    public function createDispatcher(string $filename): void
+    public function createAndDispatch(string $filename): void
     {
         $importJob = new ImportJob();
         $importJob->status = ImportJobStatus::PENDING;

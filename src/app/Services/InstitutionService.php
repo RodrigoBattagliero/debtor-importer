@@ -10,14 +10,20 @@ class InstitutionService
     {
         $institution = Institution::where('code', $code)->first();
         if (!$institution) {
-            $institution = new Institution();
-            $institution->code = $code;
-            $institution->amount = 0;
+            $institution = $this->createInstitution($code);
         }
         $institution->amount += $amount;
 
         $institution->save();
 
+    }
+
+    public function createInstitution(string $code): Institution
+    {
+        $institution = new Institution();
+        $institution->code = $code;
+        $institution->amount = 0;
+        return $institution;
     }
 
     public function get(string $code): ?Institution
