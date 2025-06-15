@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Jobs\ProcessFile;
+use App\Services\DebtorDispatcherService;
 use App\Services\DebtorService;
 use Illuminate\Http\Request;
 
 class DebtorsController extends Controller
 {
     public function __construct(
-        private DebtorService $debtorService
+        private DebtorService $debtorService,
+        private DebtorDispatcherService $debtorDispatcherService
     )
     {
         
@@ -19,7 +19,7 @@ class DebtorsController extends Controller
     public function processFile()
     {
         $filename = 'deudores.txt';
-        ProcessFile::dispatch($filename);
+        $this->debtorDispatcherService->createDispatcher($filename);
         return response()->json('Ok');
     }
 
