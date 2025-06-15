@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Services\UploadService;
-use Exception;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UploadFileController extends Controller
 {
@@ -14,11 +16,17 @@ class UploadFileController extends Controller
 
     public function upload(Request $request)
     {
-        $request->validate([
-            'file' => 'required|mimes:csv|max:2048',
-            'email' => 'required|string',
-        ]);
-        $this->uploadService->upload($request->file('file'), $request->email);
-        return response()->json('Ok');
+        try {
+            $request->validate([
+                'file' => 'required|mimes:csv|max:2048',
+                'email' => 'required|string',
+            ]);
+            $this->uploadService->upload($request->file('file'), $request->email);
+
+            return response(null, Response::HTTP_NO_CONTENT);
+            
+        } catch (Exception $e) {
+            throw new HttpResponseException(response()->json(["message"=> $e->getMessage()], Response::HTTP_BAD_REQUEST));
+        }
     }
 }
