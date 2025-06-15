@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Const\ImportJobStatus;
+use App\Events\ImportJobCompleted;
 use App\Models\ImportJob;
 use App\Services\DebtorService;
 use App\Services\InstitutionService;
@@ -52,8 +53,7 @@ class UpdateDebtor implements ShouldQueue
 
         if ($importJob->total_rows == $importJob->processed_rows) {
             $importJob->update(['status' => ImportJobStatus::DONE]);
-            // lanzar evento
-            echo 'evento para enviar emial';
+            ImportJobCompleted::dispatch();
         }
     }
 }
