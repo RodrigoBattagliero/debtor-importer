@@ -1,4 +1,4 @@
-# Instruc
+# Introduction
 This repository in intended to process a file with debtors unknown structure data to an internal structure data that we can use.
 
 # Installation
