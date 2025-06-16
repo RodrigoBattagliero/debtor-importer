@@ -36,7 +36,7 @@ class ProcessFile implements ShouldQueue
             if (!$importJob) {
                 throw new \Exception('Not importedJob found.');
             }
-            $importJob->update(['status' => ImportJobStatus::IN_PROGRESS]);
+            $importJob->status = ImportJobStatus::IN_PROGRESS;
     
     
             $path = Storage::path($importJob->file);
@@ -51,21 +51,22 @@ class ProcessFile implements ShouldQueue
                         $this->log($msg);
 
                         $currentChunk[] = $data;
+                        $totalRows++;
 
                         if (count($currentChunk) >= $this::MAX_CHUNCK_BATCH) {
-                            UpdateDebtor::dispatch($importJob->id, $currentChunk);
-                            $currentChunk = [];
+                            UpdateDebtor::dispatch($importJob->id, $currentChunk)->onQueue('update');
+                            $currentChunk = [];                            
                         }
-                        $totalRows++;
                     }
                 );
 
             if (!empty($currentChunk)) {
-                UpdateDebtor::dispatch($importJob->id, $currentChunk);
+                UpdateDebtor::dispatch($importJob->id, $currentChunk)->onQueue('update');
             }
     
-            $importJob->update(['total_rows' => $totalRows]);
+            $importJob->total_rows = $totalRows;
 
+            $importJob->save();
             $msg = "ImportJob {$this->id}: {$totalRows} rows processed";
             $this->log($msg);
 

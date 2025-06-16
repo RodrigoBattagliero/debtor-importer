@@ -16,6 +16,6 @@ class DebtorDispatcherService
         $importJob->file = $filename;
         $importJob->save();
         
-        ProcessFile::dispatch($importJob->id);
+        ProcessFile::dispatch($importJob->id)->onQueue('default');
     }
 }

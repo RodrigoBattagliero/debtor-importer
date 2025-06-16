@@ -39,30 +39,40 @@ class UpdateDebtor implements ShouldQueue
             if (!$importJob) {
                 throw new \Exception('Not importedJob found.');
             }
-            foreach ($this->data as $line) {
 
+            foreach ($this->data as $line) {
+                $processedRows++;
                 $msg = "ImportJob {$this->id}: Updating debtor and institution: " . json_encode($line);
                 $this->log($msg);
 
                 $debtorService->updateDebtor($line['cuit'], $line['max_situation'], $line['amount']);
                 $institutionService->updateInstitution($line['institution'], $line['amount']);
-                $processedRows++;
             }
-            $importJob->update(['processed_rows' => $importJob->processed_rows + $processedRows]);
 
-            $msg = "ImportJob {$this->id}: {$importJob->processed_rows} rows updated";
+            $total_rows = $importJob->processed_rows + $processedRows;
+            $importJob->processed_rows = $total_rows;
+
+            $msg = "ImportJob {$this->id}: total: {$importJob->total_rows}";
+            $this->log($msg);
+
+            $msg = "ImportJob {$this->id}: partial: {$importJob->processed_rows} ";
             $this->log($msg);
 
             if ($importJob->total_rows == $importJob->processed_rows) {
-                $importJob->update(['status' => ImportJobStatus::DONE]);
+                $msg = "ImportJob {$this->id}: DONE";
+                $this->log($msg);
+
+                $importJob->status = ImportJobStatus::DONE;
                 ImportJobCompleted::dispatch($importJob);
             }
+
+            $importJob->save();
 
             $msg = "ImportJob {$this->id}: updated finished";
             $this->log($msg);
 
         } catch (\Exception $e) {
-            echo $msg . "\n";
+            echo $e->getMessage() . "\n";
             Log::channel('import')->error($msg);
         }
     }
