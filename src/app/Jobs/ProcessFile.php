@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
 class ProcessFile implements ShouldQueue
 {
@@ -28,6 +29,9 @@ class ProcessFile implements ShouldQueue
     public function handle(): void
     {
         try {
+            $msg = "ImportJob {$this->id}: Starting";
+            $this->log($msg);
+
             $importJob = ImportJob::find($this->id);
             if (!$importJob) {
                 throw new \Exception('Not importedJob found.');
@@ -43,6 +47,8 @@ class ProcessFile implements ShouldQueue
                 ->each(function ($row) use (&$currentChunk, &$totalRows, $importJob) 
                     {
                         $data = $this->getDataFromRow($row);
+                        $msg = "ImportJob {$this->id}: from: {$row} to: " . json_encode($data);
+                        $this->log($msg);
 
                         $currentChunk[] = $data;
 
@@ -60,8 +66,16 @@ class ProcessFile implements ShouldQueue
     
             $importJob->update(['total_rows' => $totalRows]);
 
+            $msg = "ImportJob {$this->id}: {$totalRows} rows processed";
+            $this->log($msg);
+
+            $msg = "ImportJob {$this->id}: Finished";
+            $this->log($msg);
+
         } catch (\Exception $e) {
-            echo $e->getMessage();
+            $msg = "ImportJob {$this->id}: Error: " . $e->getMessage();
+            echo $msg . "\n";
+            Log::channel('import')->error($msg);
         }
         
     }
@@ -75,5 +89,12 @@ class ProcessFile implements ShouldQueue
         $data['amount'] = (float) substr($row, 29, 12);
 
         return $data;
+    }
+
+    public function log(string $msg): void
+    {
+        echo $msg . "\n";
+        Log::channel('import')->info($msg);
+
     }
 }

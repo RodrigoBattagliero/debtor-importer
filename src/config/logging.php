@@ -52,6 +52,13 @@ return [
 
     'channels' => [
 
+        'import' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/import_job.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'channels' => explode(',', env('LOG_STACK', 'single')),
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', env('LOG_STACK', 'single')),
