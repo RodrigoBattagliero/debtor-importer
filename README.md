@@ -6,10 +6,11 @@ Clone the project:
 
 `git clone https://github.com/RodrigoBattagliero/debtor-importer.git`
 
+Run `cd debtor-importer`
 
-Modify .env
+Modify `src/.env`
 
-`cp .env.example .env`
+`cp src/.env.example src/.env`
 
 make sure to have the correct data in this keys
 
@@ -21,6 +22,10 @@ DB_DATABASE=wayni
 DB_USERNAME=wayni
 DB_PASSWORD=wayni
 ```
+
+Run docker compose
+`docker compose up -d`
+
 Enter container shell
 
 `docker compose exec php sh`
