@@ -144,7 +144,7 @@ Find a entity by code and returns its data.
 
 **In order to execute testing class, make sure to configure testing database.**
 
-Run `cp .env env.testing`
+Run `cp src/.env src/.env.testing`
 
 > Change `DB_DATABASE` you can add '_test'. 
 
