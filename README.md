@@ -33,7 +33,7 @@ Enter container shell
 In this shell run as follow:
 - Install dependencies `composer install`
 - Run migrations `php artisan migrate`
-- Start workers 
+- Start workers (you can use two terminals)
     - `php artisan queue:work --queue=update`
     - `php artisan queue:work --queue=default`
 
