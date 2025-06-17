@@ -142,11 +142,12 @@ Find a entity by code and returns its data.
 
 ## Testing
 
-**In order to execute testing class, make sure to configure testing database.**
+**In order to execute testing class, make sure to configure testing database connection.**
 
 Run `cp src/.env src/.env.testing`
 
 > Change `DB_DATABASE` you can add '_test'. 
+> Check `DB_USERNAME` and `DB_PASSWORD` are correct.
 
 Enter container shell
 
