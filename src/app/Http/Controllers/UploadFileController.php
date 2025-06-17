@@ -18,7 +18,7 @@ class UploadFileController extends Controller
     {
         try {
             $request->validate([
-                'file' => 'required|mimes:csv|max:2048',
+                'file' => 'required|mimes:csv,txt|max:2048',
                 'email' => 'required|string',
             ]);
             $this->uploadService->upload($request->file('file'), $request->email);
