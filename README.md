@@ -139,3 +139,19 @@ Find a entity by code and returns its data.
 }
 
 ```
+
+## Testing
+
+**In order to execute testing class, make sure to configure testing database.**
+
+Run `cp .env env.testing`
+
+> Change `DB_DATABASE` you can add '_test'. 
+
+Enter container shell
+
+`docker compose exec php sh`
+
+Run migrations `php artisan migrate --env=testing`
+
+Run `php artisan test`
